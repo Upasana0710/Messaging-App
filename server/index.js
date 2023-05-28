@@ -15,11 +15,11 @@ mongoose.connect(process.env.CONNECTION_URL)
     }))
     .catch((err)=>console.log(err));
 
-    const corsConfig={
-        credentials: "true",
-        origin: "http://localhost:3000",
-        optionSuccessStatus: "200",
-    };
+const corsConfig={
+    credentials: "true",
+    origin: "http://localhost:3000",
+    optionSuccessStatus: "200",
+};
 
 app.use(helmet());
 app.use(compression());
