@@ -1,0 +1,15 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "local": "nodemon index.js",
+    "dev": "yarn run compile && node build/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "shx rm -rf build/ && tsc"
+  },
+  "dependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
