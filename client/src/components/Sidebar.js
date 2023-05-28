@@ -4,6 +4,7 @@ import Avatar from '@mui/material/Avatar';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import SendIcon from '@mui/icons-material/Send';
 
 const MainContainer = styled.div`
   background: ${({ theme }) => theme.bg};
@@ -99,7 +100,7 @@ const MessageBlock = styled.div`
 background: ${({ theme }) => theme.bg};
 color: ${({ theme }) => theme.text_primary};
 height: 60px;
-width: 100%;
+width: 24%;
 padding: 0px 12px;
 border-top: 1px solid ${({ theme }) => theme.bgHighlight};
 display: flex;
@@ -107,6 +108,7 @@ justify-content: center;
 align-items: center;
 position: fixed;
 bottom: 0;
+box-sizing: border-box;
 `;
 const ChattingWith = styled.div`
 display: flex;
@@ -117,13 +119,12 @@ height: 60px;
 width: 100%;
 padding: 0px 12px;
 gap: 12px;
-border-top: 1px solid ${({ theme }) => theme.primary+99};
 `;
 const Messages = styled.div`
 display: flex;
 flex-direction: column;
 width: 100%;
-padding: 10px;
+padding: 20px 10px;
 box-sizing: border-box;
 `;
 const MessageContainer = styled.div`
@@ -143,6 +144,12 @@ border-radius: 0px 12px 12px 12px;
 display: flex;
 flex-direction: column;
 gap: 4px;
+&:hover{
+    transform: translateY(-8px);
+    transition: all 0.4s ease-in-out;
+    box-shadow: 0 0 18px 0 rgba(0, 0, 0, 0.3);
+    filter: brightness(1.3);
+  }
 `;
 const MyMessage = styled.div`
 height: fit-content;
@@ -153,6 +160,12 @@ border-radius: 12px 12px 0px 12px;
 display: flex;
 flex-direction: column;
 gap: 4px;
+&:hover{
+    transform: translateY(-8px);
+    transition: all 0.4s ease-in-out;
+    box-shadow: 0 0 18px 0 rgba(0, 0, 0, 0.3);
+    filter: brightness(1.3);
+  }
 `;
 const Content = styled.div`
 color: ${({ theme }) => theme.text_primary};
@@ -220,6 +233,7 @@ const Sidebar = () => {
                     </Messages>
                     <MessageBlock>
                         <input placeholder="Message..." type="text" style={{ "border": "none", "outline": "none", "width": "100%", "background": "inherit", "color": "inherit", "font-size": "16px" }} />
+                        <SendIcon style={{"color": "#b1b2b3","cursor":"pointer"}}/>
                     </MessageBlock>
                 </Chat>
             }
