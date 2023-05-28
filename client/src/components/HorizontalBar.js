@@ -10,8 +10,8 @@ const MainContainer= styled.div`
 `;
 const Mode= styled.div`
   background: ${({ theme }) => theme.bg};
-  width: 80px;
-  padding: 8px;
+  width: fit-content;
+  padding: 8px 12px;
   border: 1px solid ${({ theme }) => theme.primary};
   border-radius: 16px;
   cursor: pointer;
