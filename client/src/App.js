@@ -16,7 +16,7 @@ function App() {
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <MainContainer>
-        <HorizontalBar />
+        <HorizontalBar darkMode={darkMode} setDarkMode={setDarkMode} />
         <Sidebar />
       </MainContainer>
     </ThemeProvider>
