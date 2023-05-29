@@ -30,12 +30,12 @@ import User from '../models/User.js';
 export const signup = (req, res) => {
 
     const {googleAccessToken} = req.body;
+
     axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
         headers: {
             "Authorization": `Bearer ${googleAccessToken}`
         }
     }).then(async response =>{
-        console.log("running"); 
         const name = response.data.given_name;
         const email = response.data.email;
         const profilePic = response.data.picture;
@@ -60,12 +60,12 @@ export const signup = (req, res) => {
 
 export const signin = (req, res) => {
     const {googleAccessToken} = req.body;
-
         axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
             headers: {
                 "Authorization": `Bearer ${googleAccessToken}`
             }
         }).then(async response => {
+            
             const name = response.data.given_name;
             const email = response.data.email;
             const profilePic = response.data.picture;
