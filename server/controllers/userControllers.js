@@ -85,3 +85,13 @@ export const signin = (req, res) => {
             res.status(400).json({message: "Invalid access token!"})
         })
 }
+
+export const getUser = async(req, res) => {
+    const {id} = req.params;
+    try{
+        const user = await User.findById(id);
+        res.status(200).json(user);
+    }catch(error){
+        console.log(error);
+    }
+}
