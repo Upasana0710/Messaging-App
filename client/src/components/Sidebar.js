@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components';
 import Avatar from '@mui/material/Avatar';
-import SearchIcon from '@mui/icons-material/Search';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SearchIcon from '@mui/icons-material/Search';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import SendIcon from '@mui/icons-material/Send';
-import axios from 'axios';
+import { getDM, getMessages, fetchUser, createMessage } from '../api/index';
+import Conversation from './Conversation';
+import Messages from './Messages';
 
 const MainContainer = styled.div`
   background: ${({ theme }) => theme.bg};
@@ -46,20 +48,7 @@ display: flex;
 justify-content: center;
 align-items: center;
 `;
-const Block = styled.div`
-background: ${({ theme }) => theme.bg};
-height: 54px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 8px 0px;
-padding-right: 12px;
-cursor: pointer;
-&:hover{
-    background: ${({ theme }) => theme.bgHighlight};
-    border-left: 1px solid ${({ theme }) => theme.primary};
-}
-`;
+
 const Search = styled.div`
 background: ${({ theme }) => theme.bgHighlight};
 color: ${({ theme }) => theme.text_primary};
@@ -72,23 +61,7 @@ padding: 12px;
 box-sizing: border-box;
 gap: 4px;
 `;
-const PersonInfo = styled.div`
-display: flex;
-padding: 0px 16px;
-gap: 12px;
-`;
-const Name = styled.div`
-color: ${({ theme }) => theme.text_primary};
-`;
-const Info = styled.div`
-display: flex;
-flex-direction: column;
-gap: 4px;
-`;
-const LastMessage = styled.div`
-color: ${({ theme }) => theme.text_secondary};
-font-size: 12px;
-`;
+
 const Conversations = styled.div`
 display: flex;
 flex-direction: column;
@@ -121,79 +94,77 @@ width: 100%;
 padding: 0px 12px;
 gap: 12px;
 `;
-const Messages = styled.div`
-display: flex;
-flex-direction: column;
-width: 100%;
-padding: 20px 10px;
-box-sizing: border-box;
-`;
-const MessageContainer = styled.div`
-display: flex;
-justify-content: flex-start;
-`;
-const MyMessageContainer = styled.div`
-display: flex;
-justify-content: flex-end;
-`;
-const Message = styled.div`
-height: fit-content;
-width: fit-content;
-padding: 8px;
-background: ${({ theme }) => theme.bgHighlight};
-border-radius: 0px 12px 12px 12px;
-display: flex;
-flex-direction: column;
-gap: 4px;
-&:hover{
-    transform: translateY(-8px);
-    transition: all 0.4s ease-in-out;
-    box-shadow: 0 0 18px 0 rgba(0, 0, 0, 0.3);
-    filter: brightness(1.3);
-  }
-`;
-const MyMessage = styled.div`
-height: fit-content;
-width: fit-content;
-padding: 8px;
-background: ${({ theme }) => theme.primary};
-border-radius: 12px 12px 0px 12px;
-display: flex;
-flex-direction: column;
-gap: 4px;
-&:hover{
-    transform: translateY(-8px);
-    transition: all 0.4s ease-in-out;
-    box-shadow: 0 0 18px 0 rgba(0, 0, 0, 0.3);
-    filter: brightness(1.3);
-  }
-`;
-const Content = styled.div`
+const Name = styled.div`
 color: ${({ theme }) => theme.text_primary};
-font-size: 12px;
 `;
-const Timestamp = styled.div`
-color: ${({ theme }) => theme.text_secondary + 99};
-font-size: 10px;
-font-weight: 700;
-text-align: end;
-`;
+
+
 const Sidebar = () => {
-    const numbers = [1, 2, 3, 4, 5];
     const [showChat, setShowChat] = useState(false);
     const [conversations, setConversations] = useState([]);
+    const [dms, setDms] = useState([]);
+    const [newMessage, setNewMessage] = useState("");
+    const [currentChat, setCurrentChat] = useState(null);
+    const [friend, setFriend] = useState(null);
+    const scrollRef = useRef();
     const user = JSON.parse(localStorage.getItem('user_info'));
-
-    const getConversations = async () => {
-        await axios.get('http://localhost:5000/conversation/'+user.result._id).then((res)=>
-        console.log(res)).catch((err)=> 
-        console.log(err));
-    }
-
-    useEffect(()=>{
+    let arr;
+    useEffect(() => {
+        const getConversations = async () => {
+            getDM(user.result._id).then((res) => {
+                setConversations(res.data);
+            })
+                .catch((err) =>
+                    console.log(err));
+        }
         getConversations();
-        
-    })
+    }, [user.result._id])
+    const messaging = async () => {
+        // getMessages(currentChat?._id).then((res) => {
+        //     setdms(res.data);
+        //     console.log(dms);
+        // })
+        //     .catch((err) =>
+        //         console.log(err));
+        try {
+            const res = await getMessages(currentChat?._id)
+            const friendId = currentChat?.members.find((m)=>m!==user.result._id);
+            fetchUser(friendId).then((res)=>{
+                setFriend(res.data);
+            }).catch((err)=>console.log(err))
+            // console.log(res.data);
+            // console.log(res.data.messages);
+            // setDms(res.data.messages);
+            // console.log(dms);
+            // arr = res.data.messages;
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    useEffect(() => {
+
+        messaging()
+    }, [currentChat])
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const message = {
+            sender: user.result._id,
+            text: newMessage,
+            conversationId: currentChat._id
+        }
+        try{
+            const res = await createMessage(message);
+            console.log(res.data)
+            setNewMessage("");
+            // setDms([...dms,res.data])
+        }catch(error){
+            console.log(error);
+        }
+    }
+    useEffect(() => {
+        scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, [dms]);
     return (
         <MainContainer>
             <Header>
@@ -201,7 +172,7 @@ const Sidebar = () => {
                     <ChatBubbleOutlineIcon style={{ "color": "#b1b2b3" }} />
                     <Title>Messaging</Title>
                 </Heading>
-                <Avatar />
+                <Avatar src={user.result?.profilePic} />
             </Header>
             {!showChat ?
                 <Conversations>
@@ -211,43 +182,28 @@ const Sidebar = () => {
                             <input type="text" placeholder="Search" style={{ "border": "none", "outline": "none", "width": "100%", "background": "inherit", "color": "inherit" }} />
                         </Search>
                     </SearchBlock>
-                    {numbers.map(() => (
-                        <Block onClick={() => setShowChat(!showChat)}>
-                            <PersonInfo>
-                                <Avatar />
-                                <Info>
-                                    <Name>John Doe</Name>
-                                    <LastMessage>Last Message</LastMessage>
-                                </Info>
-                            </PersonInfo>
-                            <Timestamp>7:10pm</Timestamp>
-                        </Block>
+                    {conversations.map((conversation) => (
+                        <div onClick={() => setCurrentChat(conversation)}>
+                            <Conversation conversation={conversation} user={user} showChat={showChat} setShowChat={setShowChat} />
+                        </div>
                     ))}
                 </Conversations>
                 :
                 <Chat>
                     <ChattingWith>
                         <ArrowBackIcon style={{ "color": "#b1b2b3", "cursor": "pointer" }} onClick={() => setShowChat(!showChat)} />
-                        <Avatar />
-                        <Name>John Doe</Name>
+                        <Avatar src={friend?.profilePic}/>
+                        <Name>{friend?.name}</Name>
                     </ChattingWith>
-                    <Messages>
-                        <MessageContainer>
-                            <Message>
-                                <Content>Hi this is John Doe</Content>
-                                <Timestamp>7:10pm</Timestamp>
-                            </Message>
-                        </MessageContainer>
-                        <MyMessageContainer>
-                            <MyMessage>
-                                <Content>Hi this is John Doe</Content>
-                                <Timestamp>7:10pm</Timestamp>
-                            </MyMessage>
-                        </MyMessageContainer>
-                    </Messages>
+                    {/* {arr.map((message) => (
+                        <div ref={scrollRef}>
+                            <Messages message={message} showChat={showChat} setShowChat={setShowChat} own={message.sender === user._id} />
+                        </div>
+                    ))} */}
                     <MessageBlock>
-                        <input placeholder="Message..." type="text" style={{ "border": "none", "outline": "none", "width": "100%", "background": "inherit", "color": "inherit", "font-size": "16px" }} />
-                        <SendIcon style={{"color": "#b1b2b3","cursor":"pointer"}}/>
+                        <input placeholder="Message..." type="text" style={{ border: "none", outline: "none", width: "100%", background: "inherit", color: "inherit", fontSize: "16px" }} 
+                        onChange={(e)=>setNewMessage(e.target.value)} value={newMessage}/>
+                        <SendIcon style={{ "color": "#b1b2b3", "cursor": "pointer" }} onClick={handleSubmit}/>
                     </MessageBlock>
                 </Chat>
             }
