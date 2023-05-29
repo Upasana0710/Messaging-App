@@ -2,7 +2,9 @@ import mongoose from 'mongoose';
 
 const ConversationSchema = new mongoose.Schema({
         members: {
-            type: Array,
+            type: [mongoose.Schema.Types.ObjectId],
+            references: "User",
+            required: "true"
         },
     },
     { timestamps: true }
