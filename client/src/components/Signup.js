@@ -22,7 +22,7 @@ const Box = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 24%;
+  width: 380px;
   height: 200px;
   border-radius: 8px;
   gap: 40px;
@@ -109,4 +109,4 @@ const Signup = () => {
     )
 }
 
-export default Signup
+export default Signup;
