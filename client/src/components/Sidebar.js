@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components';
 import Avatar from '@mui/material/Avatar';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import SendIcon from '@mui/icons-material/Send';
+import axios from 'axios';
 
 const MainContainer = styled.div`
   background: ${({ theme }) => theme.bg};
@@ -179,7 +180,20 @@ text-align: end;
 `;
 const Sidebar = () => {
     const numbers = [1, 2, 3, 4, 5];
-    const [showChat, setShowChat] = useState(false)
+    const [showChat, setShowChat] = useState(false);
+    const [conversations, setConversations] = useState([]);
+    const user = JSON.parse(localStorage.getItem('user_info'));
+
+    const getConversations = async () => {
+        await axios.get('http://localhost:5000/conversation/'+user.result._id).then((res)=>
+        console.log(res)).catch((err)=> 
+        console.log(err));
+    }
+
+    useEffect(()=>{
+        getConversations();
+        
+    })
     return (
         <MainContainer>
             <Header>
