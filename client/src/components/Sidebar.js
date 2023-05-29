@@ -8,6 +8,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { getDM, getMessages, fetchUser, createMessage } from '../api/index';
 import Conversation from './Conversation';
 import Messages from './Messages';
+import {io} from 'socket.io-client';
 
 const MainContainer = styled.div`
   background: ${({ theme }) => theme.bg};
@@ -106,9 +107,41 @@ const Sidebar = () => {
     const [newMessage, setNewMessage] = useState("");
     const [currentChat, setCurrentChat] = useState(null);
     const [friend, setFriend] = useState(null);
+    const socket = useRef();
+    const [arrivalMessage, setArrivalMessage] = useState(null);
+    // const [onlineUsers, setOnlineUsers] = useState([]);
     const scrollRef = useRef();
     const user = JSON.parse(localStorage.getItem('user_info'));
     let arr;
+
+    useEffect(() => {
+        socket.current = io("ws://localhost:8900");
+        socket.current.on("getMessage", (data) => {
+          setArrivalMessage({
+            sender: data.senderId,
+            text: data.text,
+            createdAt: Date.now(),
+          });
+        });
+      }, []);
+
+      useEffect(() => {
+        arrivalMessage &&
+          currentChat?.members.includes(arrivalMessage.sender) &&
+          setDms((prev) => [...prev, arrivalMessage]);
+      }, [arrivalMessage, currentChat]);
+    
+
+      useEffect(() => {
+        socket.current.emit("addUser", user.result._id);
+        socket.current.on("getUsers", (users) => {
+            console.log(users);
+        //   setOnlineUsers(
+        //     user.followings.filter((f) => users.some((u) => u.userId === f))
+        //   );
+        });
+      }, [user]);
+    
     useEffect(() => {
         const getConversations = async () => {
             getDM(user.result._id).then((res) => {
@@ -153,6 +186,16 @@ const Sidebar = () => {
             text: newMessage,
             conversationId: currentChat._id
         }
+
+        const receiverId = currentChat.members.find(
+            (member) => member !== user.result._id
+          );
+      
+          socket.current.emit("sendMessage", {
+            senderId: user.result._id,
+            receiverId,
+            text: newMessage,
+          });
         try{
             const res = await createMessage(message);
             console.log(res.data)
