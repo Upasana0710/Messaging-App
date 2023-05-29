@@ -4,6 +4,9 @@ import express from 'express';
 import cors from 'cors';
 import compression from 'compression';
 import helmet from 'helmet';
+import userRoutes from '../server/routes/userRoutes.js';
+import messageRoutes from '../server/routes/messageRoutes.js';
+import conversationRoutes from '../server/routes/conversationRoutes.js';
 dotenv.config();
 
 const app = express();
@@ -27,3 +30,7 @@ app.use(cors(corsConfig));
     
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({limit: '50mb'}));
+
+app.use('/user',userRoutes);
+app.use('/message',messageRoutes);
+app.use('/conversation',conversationRoutes);
