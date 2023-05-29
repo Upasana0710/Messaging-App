@@ -101,7 +101,7 @@ const Signup = () => {
                         <Button onClick={() => signinfunc()}>
                             <Content>Sign In</Content>
                         </Button>
-                        <Redirect onClick={() => setSignin(false)}>Already have an account? Sign up.</Redirect>
+                        <Redirect onClick={() => setSignin(false)}>Don't have an account? Sign up.</Redirect>
                     </Container>
                 }
             </Box>
