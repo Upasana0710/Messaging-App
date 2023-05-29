@@ -5,11 +5,11 @@ export const createMessage = async (req, res) => {
     try{
         const message = req.body;
 
-        const newMessage = new Messages({...message, sender: req.user});
+        const newMessage = new Messages({...message});
         
         const savedMessage = await newMessage.save();
 
-        res.json(newMessage);
+        res.json(savedMessage);
     }catch(error){
         console.log(error);
         res.json(error);
@@ -21,7 +21,7 @@ export const getMessages = async (req, res) => {
     try{
         const messages = await Messages.find({
             conversationId: convId
-        });
+        }).populate("sender");
         res.json(messages);
     }catch(error){
         console.log(error);
