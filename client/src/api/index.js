@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const API = axios.create({baseURL:"http://localhost:5000"})
+const API = axios.create({baseURL:"https://chatzbee.onrender.com"})
 
 //auth api
 export const signup = (accessToken) => API.post("/user/signup", {googleAccessToken: accessToken})
