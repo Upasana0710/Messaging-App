@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components';
 import { format } from 'timeago.js';
+import './Sidebar.css';
 
 const MessagesBlock = styled.div`
 display: flex;
@@ -22,6 +23,7 @@ height: fit-content;
 width: fit-content;
 padding: 8px;
 background: ${({ theme }) => theme.bgHighlight};
+color: ${({ theme }) => theme.text_primary};
 border-radius: 0px 12px 12px 12px;
 display: flex;
 flex-direction: column;
@@ -38,6 +40,7 @@ height: fit-content;
 width: fit-content;
 padding: 8px;
 background: ${({ theme }) => theme.primary};
+color: ${({ theme }) => theme.text_primary};
 border-radius: 12px 12px 0px 12px;
 display: flex;
 flex-direction: column;
@@ -61,19 +64,58 @@ text-align: end;
 `;
 
 const Messages = ({ message, showChat, setShowChat, own }) => {
+
+    // Define the syntax elements and their corresponding CSS classes
+    const syntaxElements = [
+        { regex: /\b(function|if|else|for|while)\b/g, className: 'keyword' },
+        { regex: /\/\/.*$/gm, className: 'comment' },
+        { regex: /(["'])(?:\\.|[^\\])*?\1/g, className: 'string' },
+        // ... Add more syntax elements and their corresponding regex and CSS classes
+    ];
+
+    // Wrap each syntax element with the appropriate React component
+    let highlightedCode = message.text;
+    syntaxElements.forEach((element) => {
+        highlightedCode = highlightedCode.replace(
+            element.regex,
+            (match) => `<span class="${element.className}">${match}</span>`
+        );
+    });
+
+    function highlightCode(code) {
+        // Define the syntax elements and their corresponding CSS classes
+
+
+        return (
+            <code>
+                {React.createElement('span', { dangerouslySetInnerHTML: { __html: highlightedCode } })}
+            </code>
+        );
+    }
+
+    useEffect(() => {
+        highlightCode(message.text)
+    }, [])
+
     return (
         <MessagesBlock>
             {!own ?
                 <MessageContainer>
                     <Message>
-                        <Content>{message.text}</Content>
+                        <code className="chat-message">
+                            {React.createElement('span', { dangerouslySetInnerHTML: { __html: highlightedCode } })}
+                        </code>
+                        {/* <div className="chat-message"></div> */}
                         <Timestamp>{format(message.createdAt)}</Timestamp>
                     </Message>
                 </MessageContainer>
                 :
                 <MyMessageContainer>
                     <MyMessage>
-                        <Content>{message.text}</Content>
+                        <code className="chat-message">
+                            {React.createElement('span', { dangerouslySetInnerHTML: { __html: highlightedCode } })}
+                        </code>
+                        {/* <Content className="chat-message"></Content> */}
                         <Timestamp>{format(message.createdAt)}</Timestamp>
                     </MyMessage>
                 </MyMessageContainer>
