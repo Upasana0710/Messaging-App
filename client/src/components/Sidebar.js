@@ -5,10 +5,11 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SearchIcon from '@mui/icons-material/Search';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import SendIcon from '@mui/icons-material/Send';
-import { getDM, getMessages, fetchUser, createMessage } from '../api/index';
+import { getDM, getMessages, fetchUser, createMessage, searchUsers, createDM } from '../api/index';
 import Conversation from './Conversation';
 import Messages from './Messages';
-import {io} from 'socket.io-client';
+import { io } from 'socket.io-client';
+import './Sidebar.css';
 
 const MainContainer = styled.div`
   background: ${({ theme }) => theme.bg};
@@ -66,10 +67,12 @@ gap: 4px;
 const Conversations = styled.div`
 display: flex;
 flex-direction: column;
+overflow-y: scroll;
 `;
 const Chat = styled.div`
 display: flex;
 flex-direction: column;
+overflow-y: scroll;
 `;
 const MessageBlock = styled.div`
 background: ${({ theme }) => theme.bg};
@@ -98,7 +101,10 @@ gap: 12px;
 const Name = styled.div`
 color: ${({ theme }) => theme.text_primary};
 `;
-
+const Mapped = styled.div`
+display: flex;
+flex-direction: column;
+`;
 
 const Sidebar = () => {
     const [showChat, setShowChat] = useState(false);
@@ -109,6 +115,9 @@ const Sidebar = () => {
     const [friend, setFriend] = useState(null);
     const socket = useRef();
     const [arrivalMessage, setArrivalMessage] = useState(null);
+    const [searched, setSearched] = useState("");
+    const [searchedUsers, setSearchedUsers] = useState([]);
+
     // const [onlineUsers, setOnlineUsers] = useState([]);
     const scrollRef = useRef();
     const user = JSON.parse(localStorage.getItem('user_info'));
@@ -117,31 +126,30 @@ const Sidebar = () => {
     useEffect(() => {
         socket.current = io("ws://localhost:8900");
         socket.current.on("getMessage", (data) => {
-          setArrivalMessage({
-            sender: data.senderId,
-            text: data.text,
-            createdAt: Date.now(),
-          });
+            setArrivalMessage({
+                sender: data.senderId,
+                text: data.text,
+                createdAt: Date.now(),
+            });
         });
-      }, []);
+    }, []);
 
-      useEffect(() => {
+    useEffect(() => {
         arrivalMessage &&
-          currentChat?.members.includes(arrivalMessage.sender) &&
-          setDms((prev) => [...prev, arrivalMessage]);
-      }, [arrivalMessage, currentChat]);
-    
+            currentChat?.members.includes(arrivalMessage.sender) &&
+            setDms((prev) => [...prev, arrivalMessage]);
+    }, [arrivalMessage, currentChat]);
 
-      useEffect(() => {
+
+    useEffect(() => {
         socket.current.emit("addUser", user.result._id);
         socket.current.on("getUsers", (users) => {
-            console.log(users);
-        //   setOnlineUsers(
-        //     user.followings.filter((f) => users.some((u) => u.userId === f))
-        //   );
+            //   setOnlineUsers(
+            //     user.followings.filter((f) => users.some((u) => u.userId === f))
+            //   );
         });
-      }, [user]);
-    
+    }, [user]);
+
     useEffect(() => {
         const getConversations = async () => {
             getDM(user.result._id).then((res) => {
@@ -161,15 +169,11 @@ const Sidebar = () => {
         //         console.log(err));
         try {
             const res = await getMessages(currentChat?._id)
-            const friendId = currentChat?.members.find((m)=>m!==user.result._id);
-            fetchUser(friendId).then((res)=>{
+            const friendId = currentChat?.members.find((m) => m !== user.result._id);
+            fetchUser(friendId).then((res) => {
                 setFriend(res.data);
-            }).catch((err)=>console.log(err))
-            // console.log(res.data);
-            // console.log(res.data.messages);
-            // setDms(res.data.messages);
-            // console.log(dms);
-            // arr = res.data.messages;
+            }).catch((err) => console.log(err))
+            setDms(res.data.messages);
         } catch (err) {
             console.log(err);
         }
@@ -186,28 +190,69 @@ const Sidebar = () => {
             text: newMessage,
             conversationId: currentChat._id
         }
-
+        console.log(message);
         const receiverId = currentChat.members.find(
             (member) => member !== user.result._id
-          );
-      
-          socket.current.emit("sendMessage", {
+        );
+
+        socket.current.emit("sendMessage", {
             senderId: user.result._id,
             receiverId,
             text: newMessage,
-          });
-        try{
+        });
+        try {
             const res = await createMessage(message);
             console.log(res.data)
             setNewMessage("");
-            // setDms([...dms,res.data])
-        }catch(error){
+            setDms([...dms,res.data])
+        } catch (error) {
             console.log(error);
         }
     }
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, [dms]);
+    }, [dms]);
+
+    const handleChange = async (e) => {
+        setSearchedUsers([]);;
+        setSearched(e.target.value);
+        await searchUsers(e.target.value)
+            .then((res) => {
+                setSearchedUsers(res.data);
+                console.log(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
+    const createNewConversation = (searchedUser) => {
+        let flag = false;
+        const newDM = {
+            senderId: user.result._id,
+            recieverId: searchedUser._id,
+        }
+        Promise.all(
+            conversations.map((conversation)=>{
+                if(conversation.members.includes(user.result._id)&&conversation.members.includes(searchedUser._id)){
+                    flag=true;
+                    setCurrentChat(conversation);
+                    setShowChat(true);
+                }
+            })
+        )
+        if(!flag){
+            createDM(newDM).then((res)=>{
+                setCurrentChat(res.data);
+                socket.current.emit("addUser", {
+                    userId: user.result._id
+                });
+                setShowChat(true);
+            }).catch((err)=>console.log(err));
+        }
+        
+    }
+
     return (
         <MainContainer>
             <Header>
@@ -218,35 +263,50 @@ const Sidebar = () => {
                 <Avatar src={user.result?.profilePic} />
             </Header>
             {!showChat ?
+
                 <Conversations>
                     <SearchBlock>
                         <Search>
                             <SearchIcon style={{ "color": "#b1b2b3" }} />
-                            <input type="text" placeholder="Search" style={{ "border": "none", "outline": "none", "width": "100%", "background": "inherit", "color": "inherit" }} />
+                            <input type="text" placeholder="Search" style={{ "border": "none", "outline": "none", "width": "100%", "background": "inherit", "color": "inherit" }} value={searched} onChange={(e) => handleChange(e)} />
                         </Search>
                     </SearchBlock>
-                    {conversations.map((conversation) => (
-                        <div onClick={() => setCurrentChat(conversation)}>
-                            <Conversation conversation={conversation} user={user} showChat={showChat} setShowChat={setShowChat} />
-                        </div>
-                    ))}
+                    {searched === "" ?
+                        <Mapped>
+                            {conversations.map((conversation) => (
+                                <div onClick={() => {setCurrentChat(conversation)
+                                                    setShowChat(true)}}>
+                                    <Conversation conversation={conversation} user={user} />
+                                </div>
+                            ))}
+                        </Mapped>
+                        :
+                        <Mapped>
+                            {searchedUsers.map((searchedUser) => (
+                                <div onClick={() => createNewConversation(searchedUser)}>
+                                    <Conversation searchedUser={searchedUser} user={user} search={true}/>
+                                </div>
+                            ))}
+                        </Mapped>
+                    }
+
                 </Conversations>
                 :
                 <Chat>
                     <ChattingWith>
                         <ArrowBackIcon style={{ "color": "#b1b2b3", "cursor": "pointer" }} onClick={() => setShowChat(!showChat)} />
-                        <Avatar src={friend?.profilePic}/>
+                        <Avatar src={friend?.profilePic} />
                         <Name>{friend?.name}</Name>
                     </ChattingWith>
-                    {/* {arr.map((message) => (
+                    {dms?.map((message) => (
                         <div ref={scrollRef}>
-                            <Messages message={message} showChat={showChat} setShowChat={setShowChat} own={message.sender === user._id} />
+                            <Messages message={message} showChat={showChat} setShowChat={setShowChat} own={message.sender === user.result._id} />
                         </div>
-                    ))} */}
+                    ))}
                     <MessageBlock>
-                        <input placeholder="Message..." type="text" style={{ border: "none", outline: "none", width: "100%", background: "inherit", color: "inherit", fontSize: "16px" }} 
-                        onChange={(e)=>setNewMessage(e.target.value)} value={newMessage}/>
-                        <SendIcon style={{ "color": "#b1b2b3", "cursor": "pointer" }} onClick={handleSubmit}/>
+                        <input placeholder="Message..." type="text" style={{ border: "none", outline: "none", width: "100%", background: "inherit", color: "inherit", fontSize: "16px" }}
+                            onChange={(e) => setNewMessage(e.target.value)} value={newMessage} />
+                        <SendIcon style={{ "color": "#b1b2b3", "cursor": "pointer" }} onClick={(e)=>handleSubmit(e)} />
                     </MessageBlock>
                 </Chat>
             }
