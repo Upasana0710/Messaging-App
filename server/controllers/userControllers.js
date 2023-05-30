@@ -60,6 +60,7 @@ export const signup = (req, res) => {
 
 export const signin = (req, res) => {
     const {googleAccessToken} = req.body;
+    console.log(googleAccessToken);
         axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
             headers: {
                 "Authorization": `Bearer ${googleAccessToken}`
