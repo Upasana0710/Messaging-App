@@ -61,10 +61,8 @@ const Conversation = ({conversation, searchedUser, user}) => {
                 <Avatar src={friend?.profilePic} />
                 <Info>
                     <Name>{friend?.name}</Name>
-                    <LastMessage>Last Message</LastMessage>
                 </Info>
             </PersonInfo>
-            <Timestamp>7:10pm</Timestamp>
         </Block>
     )
 }
