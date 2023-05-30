@@ -21,7 +21,7 @@ export const getMessages = async (req, res) => {
     try{
         const messages = await Messages.find({
             conversationId: convId
-        }).populate("sender");
+        });
         const response={messages: messages};
         res.json(response);
     }catch(error){
