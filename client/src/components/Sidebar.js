@@ -19,6 +19,9 @@ const MainContainer = styled.div`
   width: 24%;
   position: fixed;
   right: 0;
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 const Header = styled.div`
   background: ${({ theme }) => theme.bg};
@@ -87,8 +90,12 @@ align-items: center;
 position: fixed;
 bottom: 0;
 box-sizing: border-box;
+@media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 const ChattingWith = styled.div`
+background: ${({ theme }) => theme.bg};
 display: flex;
 flex-direction: row;
 justify-content: start;
@@ -97,6 +104,7 @@ height: 60px;
 width: 100%;
 padding: 0px 12px;
 gap: 12px;
+position: fixed;
 `;
 const Name = styled.div`
 color: ${({ theme }) => theme.text_primary};

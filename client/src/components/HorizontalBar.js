@@ -7,6 +7,9 @@ const MainContainer= styled.div`
   padding: 10px 40px;
   display: flex;
   justify-content: flex-end;
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
 `;
 const Mode= styled.div`
   background: ${({ theme }) => theme.bg};
