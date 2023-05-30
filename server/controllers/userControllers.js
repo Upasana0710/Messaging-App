@@ -76,7 +76,7 @@ export const signin = (req, res) => {
             if (!existingUser) 
             return res.status(404).json({message: "User don't exist!"})
 
-            const token = jwt.sign({email: existingUser.email,id: existingUser._id}, config.get("JWT_SECRET"), {expiresIn: "1h"})
+            const token = jwt.sign({email: existingUser.email,id: existingUser._id}, process.env.JWT_SECRET, {expiresIn: "1h"})
     
             res.status(200).json({result: existingUser, token})
                 
