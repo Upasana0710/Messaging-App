@@ -4,7 +4,7 @@ import Conversation from '../models/Conversation.js';
 export const createConversation = async (req, res) => {
     try{
         const newConversation = new Conversation({
-        members: [req.body.senderId, req.body.receiverId]
+        members: [req.body.senderId, req.body.recieverId]
         });
 
         const savedConversation = await newConversation.save();
