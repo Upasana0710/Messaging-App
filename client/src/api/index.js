@@ -8,8 +8,11 @@ export const signin = (accessToken) => API.post("/user/signin", {googleAccessTok
 
 //user api
 export const fetchUser = (id) => API.get(`/user/${id}`);
+export const searchUsers = async (search) => await API.get(`/user/search?n=${search}`);
+
 
 //Conversation api
+export const createDM=(newDM)=>API.post('/conversation',newDM);
 export const getDM=(id)=>API.get(`/conversation/${id}`);
 
 //message api
