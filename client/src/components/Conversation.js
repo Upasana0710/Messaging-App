@@ -40,19 +40,23 @@ font-size: 10px;
 font-weight: 700;
 text-align: end;
 `;
-const Conversation = ({conversation, user, showChat, setShowChat}) => {
+const Conversation = ({conversation, searchedUser, user}) => {
 
     const [friend, setFriend] = useState(null);
 
     useEffect(()=>{
+        if(conversation){
         const friendId = conversation.members?.find((m)=>m!==user.result._id);
 
         fetchUser(friendId).then((res)=>{
             setFriend(res.data);
         }).catch((err)=>console.log(err))
+    }else if(searchedUser){
+        setFriend(searchedUser);
+    }
     },[user,conversation])
     return (
-        <Block onClick={() => setShowChat(!showChat)}>
+        <Block>
             <PersonInfo>
                 <Avatar src={friend?.profilePic} />
                 <Info>
