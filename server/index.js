@@ -20,7 +20,7 @@ mongoose.connect(process.env.CONNECTION_URL)
 
 const corsConfig={
     credentials: "true",
-    origin: "http://localhost:3000",
+    origin: "https://chatzbee.netlify.app",
     optionSuccessStatus: "200",
 };
 
