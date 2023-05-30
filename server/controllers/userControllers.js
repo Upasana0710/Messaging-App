@@ -95,3 +95,16 @@ export const getUser = async(req, res) => {
         console.log(error);
     }
 }
+
+export const searchUser = async (req, res) => {
+    const query = req.query.n;
+    try {
+      const user = await User.find({
+        name: { $regex: query, $options: "i" },
+      }).limit(40);
+      res.status(200).json(user);
+    } catch (err) {
+      console.log(err);
+      res.json({message: err.message});
+    }
+  };
