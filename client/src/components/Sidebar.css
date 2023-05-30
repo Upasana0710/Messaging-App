@@ -1,0 +1,11 @@
+.keyword {
+    color: blue;
+  }
+  
+  .comment {
+    color: green;
+  }
+  
+  .string {
+    color: red;
+  }
