@@ -1,10 +1,9 @@
 import express from 'express';
-import {signup, signin, getUser, searchUser} from '../controllers/userControllers.js';
+import {googleAuth, getUser, searchUser} from '../controllers/userControllers.js';
 
 const router = express.Router();
 
-router.post('/signup',signup);
-router.post('/signin',signin);
+router.post('/googleLogin',googleAuth);
 router.get('/search',searchUser);
 router.get('/:id',getUser);
 

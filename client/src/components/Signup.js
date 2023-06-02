@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Link, useNavigate } from "react-router-dom"
 import { useGoogleLogin } from '@react-oauth/google';
 import { useDispatch } from 'react-redux';
-import { signupGoogle, signinGoogle } from "../redux/actions/auth";
+import { googleLogin } from "../redux/actions/auth";
 
 const MainContainer = styled.div`
   background: ${({ theme }) => theme.bgLight};
@@ -68,22 +68,22 @@ const Signup = () => {
     const [user, setUser] = useState({ name: '', email: '', profilePic: '' });
     const [signin, setSignin] = useState(false);
 
-    function handleGoogleSignUpSuccess(tokenResponse) {
+    // function handleGoogleSignUpSuccess(tokenResponse) {
 
-        const accessToken = tokenResponse.access_token;
+    //     const accessToken = tokenResponse.access_token;
 
-        dispatch(signupGoogle(accessToken, navigate))
-    }
+    //     dispatch(signupGoogle(accessToken, navigate))
+    // }
 
-    const signupfunc = useGoogleLogin({ onSuccess: handleGoogleSignUpSuccess });
+    // const signupfunc = useGoogleLogin({ onSuccess: handleGoogleSignUpSuccess });
 
     function handleGoogleSignInSuccess(tokenResponse) {
 
         const accessToken = tokenResponse.access_token;
 
-        dispatch(signinGoogle(accessToken, navigate))
+        dispatch(googleLogin(accessToken, navigate))
     }
-    const signinfunc = useGoogleLogin({ onSuccess: handleGoogleSignInSuccess });
+    const handleGooglelogin = useGoogleLogin({ onSuccess: handleGoogleSignInSuccess });
 
     return (
         <MainContainer>
@@ -91,14 +91,14 @@ const Signup = () => {
                 <Welcome>Welcome to Chat App</Welcome>
                 {!signin ?
                     <Container>
-                        <Button onClick={() => signupfunc()}>
+                        <Button onClick={() => handleGooglelogin()}>
                             <Content>Sign Up</Content>
                         </Button>
                         <Redirect onClick={() => setSignin(true)}>Already have an account? Sign in.</Redirect>
                     </Container>
                     :
                     <Container>
-                        <Button onClick={() => signinfunc()}>
+                        <Button onClick={() => handleGooglelogin()}>
                             <Content>Sign In</Content>
                         </Button>
                         <Redirect onClick={() => setSignin(false)}>Don't have an account? Sign up.</Redirect>

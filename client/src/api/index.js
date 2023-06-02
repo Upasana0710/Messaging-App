@@ -3,8 +3,9 @@ import axios from "axios"
 const API = axios.create({baseURL:"https://chatzbee.onrender.com"})
 
 //auth api
-export const signup = (accessToken) => API.post("/user/signup", {googleAccessToken: accessToken})
-export const signin = (accessToken) => API.post("/user/signin", {googleAccessToken: accessToken})
+export const googleLogin = (accessToken) => API.post("/user/googleLogin", {googleAccessToken: accessToken})
+// export const signup = (accessToken) => API.post("/user/signup", {googleAccessToken: accessToken})
+// export const signin = (accessToken) => API.post("/user/signin", {googleAccessToken: accessToken})
 
 //user api
 export const fetchUser = (id) => API.get(`/user/${id}`);
