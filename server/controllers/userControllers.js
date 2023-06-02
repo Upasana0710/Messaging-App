@@ -47,7 +47,7 @@ export const signup = (req, res) => {
 
         const result = await User.create({verified:"true",name,email,profilePic})
 
-        const token = jwt.sign({email: result.email,id: result._id}, config.get("JWT_SECRET"), {expiresIn: "1h"})
+        const token = jwt.sign({email: result.email,id: result._id}, process.env.JWT_SECRET, {expiresIn: "1h"})
                 
         res.status(200).json({result, token})
     }).catch(err => {
