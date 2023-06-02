@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import compression from 'compression';
-import helmet from 'helmet';
 import morgan from 'morgan';
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -26,7 +25,6 @@ const corsConfig={
     origin: true,
 };
 
-app.use(helmet());
 app.use(compression());
 app.use(cors(corsConfig));
 app.use(morgan('tiny'));

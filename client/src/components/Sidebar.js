@@ -312,13 +312,11 @@ const Sidebar = () => {
                         <Avatar src={friend?.profilePic} />
                         <Name>{friend?.name}</Name>
                     </ChattingWith>
-                    <Contain>
                     {dms?.map((message) => (
-                        <div ref={scrollRef}>
+                        <Contain ref={scrollRef}>
                             <Messages message={message} showChat={showChat} setShowChat={setShowChat} own={message.sender === user.result._id} />
-                        </div>
+                        </Contain>
                     ))}
-                    </Contain>
                     <MessageBlock>
                         <input placeholder="Message..." type="text" style={{ border: "none", outline: "none", width: "100%", background: "inherit", color: "inherit", fontSize: "16px" }}
                             onChange={(e) => setNewMessage(e.target.value)} value={newMessage} />
