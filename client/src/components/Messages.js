@@ -19,14 +19,15 @@ display: flex;
 justify-content: flex-end;
 `;
 const Message = styled.div`
-height: fit-content;
-width: fit-content;
+min-height: 40px;
+width: 120px;
 padding: 8px;
 background: ${({ theme }) => theme.bgHighlight};
 color: ${({ theme }) => theme.text_primary};
 border-radius: 0px 12px 12px 12px;
 display: flex;
 flex-direction: column;
+position: relative;
 gap: 4px;
 &:hover{
     transform: translateY(-8px);
@@ -36,8 +37,8 @@ gap: 4px;
   }
 `;
 const MyMessage = styled.div`
-height: fit-content;
-width: fit-content;
+min-height: 40px;
+width: 120px;
 padding: 8px;
 background: ${({ theme }) => theme.primary};
 color: ${({ theme }) => theme.text_primary};
@@ -45,6 +46,7 @@ border-radius: 12px 12px 0px 12px;
 display: flex;
 flex-direction: column;
 gap: 4px;
+position: relative;
 &:hover{
     transform: translateY(-8px);
     transition: all 0.4s ease-in-out;
@@ -53,14 +55,16 @@ gap: 4px;
   }
 `;
 const Content = styled.div`
-color: ${({ theme }) => theme.text_primary};
-font-size: 12px;
+font-size: 14px;
 `;
 const Timestamp = styled.div`
 color: ${({ theme }) => theme.text_secondary + 99};
 font-size: 10px;
 font-weight: 700;
 text-align: end;
+position: absolute;
+bottom: 6px;
+right: 6px;
 `;
 
 const Messages = ({ message, showChat, setShowChat, own }) => {
@@ -102,9 +106,11 @@ const Messages = ({ message, showChat, setShowChat, own }) => {
             {!own ?
                 <MessageContainer>
                     <Message>
-                        <code className="chat-message">
-                            {React.createElement('span', { dangerouslySetInnerHTML: { __html: highlightedCode } })}
-                        </code>
+                        <Content>
+                            <code className="chat-message">
+                                {React.createElement('span', { dangerouslySetInnerHTML: { __html: highlightedCode } })}
+                            </code>
+                        </Content>
                         {/* <div className="chat-message"></div> */}
                         <Timestamp>{format(message.createdAt)}</Timestamp>
                     </Message>
@@ -112,9 +118,11 @@ const Messages = ({ message, showChat, setShowChat, own }) => {
                 :
                 <MyMessageContainer>
                     <MyMessage>
-                        <code className="chat-message">
-                            {React.createElement('span', { dangerouslySetInnerHTML: { __html: highlightedCode } })}
-                        </code>
+                        <Content>
+                            <code className="chat-message">
+                                {React.createElement('span', { dangerouslySetInnerHTML: { __html: highlightedCode } })}
+                            </code>
+                        </Content>
                         {/* <Content className="chat-message"></Content> */}
                         <Timestamp>{format(message.createdAt)}</Timestamp>
                     </MyMessage>
