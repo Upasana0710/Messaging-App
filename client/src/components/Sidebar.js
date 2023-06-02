@@ -136,7 +136,7 @@ const Sidebar = () => {
     let arr;
 
     useEffect(() => {
-        socket.current = io("https://chatzbee.onrender.com/");
+        socket.current = io("https://chatzbee.onrender.com:8900/");
         socket.current.on("getMessage", (data) => {
             setArrivalMessage({
                 sender: data.senderId,
