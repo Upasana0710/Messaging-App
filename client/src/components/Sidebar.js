@@ -134,6 +134,7 @@ const Sidebar = () => {
     // const [onlineUsers, setOnlineUsers] = useState([]);
     const scrollRef = useRef();
     const user = JSON.parse(localStorage.getItem('user_info'));
+    console.log(user);
     let arr;
 
     useEffect(() => {
