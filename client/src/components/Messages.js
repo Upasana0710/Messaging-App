@@ -7,7 +7,7 @@ const MessagesBlock = styled.div`
 display: flex;
 flex-direction: column;
 width: 100%;
-padding: 20px 10px;
+padding: 8px 10px;
 box-sizing: border-box;
 `;
 const MessageContainer = styled.div`
@@ -28,7 +28,6 @@ border-radius: 0px 12px 12px 12px;
 display: flex;
 flex-direction: column;
 position: relative;
-gap: 4px;
 &:hover{
     transform: translateY(-8px);
     transition: all 0.4s ease-in-out;

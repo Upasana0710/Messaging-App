@@ -75,12 +75,12 @@ overflow-y: scroll;
 const Chat = styled.div`
 display: flex;
 flex-direction: column;
-overflow-y: scroll;
+height: 84%
 `;
 const MessageBlock = styled.div`
 background: ${({ theme }) => theme.bg};
 color: ${({ theme }) => theme.text_primary};
-height: 60px;
+height: 8%;
 width: 24%;
 padding: 0px 12px;
 border-top: 1px solid ${({ theme }) => theme.bgHighlight};
@@ -100,11 +100,12 @@ display: flex;
 flex-direction: row;
 justify-content: start;
 align-items: center;
-height: 60px;
 width: 100%;
 padding: 0px 12px;
 gap: 12px;
 position: fixed;
+z-index: 999;
+height: 8%;
 `;
 const Name = styled.div`
 color: ${({ theme }) => theme.text_primary};
@@ -114,8 +115,8 @@ display: flex;
 flex-direction: column;
 `;
 const Contain = styled.div`
-display: flex;
-flex-direction: column;
+overflow-y: scroll;
+padding: 50px 0px;
 `;
 
 const Sidebar = () => {
@@ -136,7 +137,7 @@ const Sidebar = () => {
     let arr;
 
     useEffect(() => {
-        socket.current = io("https://chatzbee.onrender.com:8900/");
+        socket.current = io("https://chatzbee.onrender.com:8900");
         socket.current.on("getMessage", (data) => {
             setArrivalMessage({
                 sender: data.senderId,
@@ -312,11 +313,13 @@ const Sidebar = () => {
                         <Avatar src={friend?.profilePic} />
                         <Name>{friend?.name}</Name>
                     </ChattingWith>
+                    <Contain>
                     {dms?.map((message) => (
-                        <Contain ref={scrollRef}>
+                        <div ref={scrollRef}>
                             <Messages message={message} showChat={showChat} setShowChat={setShowChat} own={message.sender === user.result._id} />
-                        </Contain>
+                        </div>
                     ))}
+                    </Contain>
                     <MessageBlock>
                         <input placeholder="Message..." type="text" style={{ border: "none", outline: "none", width: "100%", background: "inherit", color: "inherit", fontSize: "16px" }}
                             onChange={(e) => setNewMessage(e.target.value)} value={newMessage} />
